@@ -73,6 +73,7 @@ public abstract class PatternMatchUtils {
 	}
 
 	/**
+	 * 匹配字符串通过给定的patterns 通配符*
 	 * Match a String against the given patterns, supporting the following simple
 	 * pattern styles: "xxx*", "*xxx", "*xxx*" and "xxx*yyy" matches (with an
 	 * arbitrary number of pattern parts), as well as direct equality.

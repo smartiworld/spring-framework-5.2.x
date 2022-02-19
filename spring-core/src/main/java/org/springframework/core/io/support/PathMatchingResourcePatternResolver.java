@@ -326,6 +326,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	}
 
 	/**
+	 * 查找出所有的class 根据给定路径
 	 * Find all class location resources with the given path via the ClassLoader.
 	 * Called by {@link #findAllClassPathResources(String)}.
 	 * @param path the absolute path within the classpath (never a leading slash)

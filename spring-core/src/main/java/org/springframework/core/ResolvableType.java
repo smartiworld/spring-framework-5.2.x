@@ -253,6 +253,7 @@ public class ResolvableType implements Serializable {
 	}
 
 	/**
+	 * 确定ResolvableType是否可从其他类型转换
 	 * Determine whether this {@code ResolvableType} is assignable from the
 	 * specified other type.
 	 * @param other the type to be checked against (as a {@code Class})
@@ -510,11 +511,13 @@ public class ResolvableType implements Serializable {
 	}
 
 	/**
+	 * 如果包含泛型参数则返回true
 	 * Return {@code true} if this type contains generic parameters.
 	 * @see #getGeneric(int...)
 	 * @see #getGenerics()
 	 */
 	public boolean hasGenerics() {
+		// 获取此类的的泛型参数，如果长度大于0，表示包含泛型参数，返回true；否则，返回false
 		return (getGenerics().length > 0);
 	}
 
@@ -689,6 +692,9 @@ public class ResolvableType implements Serializable {
 	}
 
 	/**
+	 * 返回表现此类型的泛型参数的{@link ResolvableType ResolvableTypes}数组。如果没有可用的泛型，
+	 * 则返回一个空的数组。如果需要访问特定的泛型，请考虑使用{@link #getGeneric(int...)} 方法，
+	 * 因为它允许访问嵌套的泛型并防止{@code IndexOutBoundsExceptions}
 	 * Return an array of {@link ResolvableType ResolvableTypes} representing the generic parameters of
 	 * this type. If no generics are available an empty array is returned. If you need to
 	 * access a specific generic consider using the {@link #getGeneric(int...)} method as

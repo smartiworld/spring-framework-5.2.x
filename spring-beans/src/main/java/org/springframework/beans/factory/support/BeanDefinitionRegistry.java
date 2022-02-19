@@ -48,6 +48,9 @@ import org.springframework.core.AliasRegistry;
 public interface BeanDefinitionRegistry extends AliasRegistry {
 
 	/**
+	 * 注册beanDefinition到beanFactory 如果当前bean name已经注册
+	 * 不可以覆盖 exception
+	 * 否则resetBeanDefinition
 	 * Register a new bean definition with this registry.
 	 * Must support RootBeanDefinition and ChildBeanDefinition.
 	 * @param beanName the name of the bean instance to register
@@ -98,6 +101,10 @@ public interface BeanDefinitionRegistry extends AliasRegistry {
 	int getBeanDefinitionCount();
 
 	/**
+	 * 确定给定bean name 是否已经在注册表 别名缓存
+	 * (一级缓存中是否存在当前bean name或者是否存在当前bean name的definition) &&
+	 * 	 * (bean name不是以&开头 或者bean是FactoryBean)
+	 * 当前bean是否有依赖其他bean
 	 * Determine whether the given bean name is already in use within this registry,
 	 * i.e. whether there is a local bean or alias registered under this name.
 	 * @param beanName the name to check

@@ -72,6 +72,7 @@ public abstract class BeanFactoryUtils {
 	}
 
 	/**
+	 * 格式化bean名称 排除名称开头&符号  返回实际bean名称
 	 * Return the actual bean name, stripping out the factory dereference
 	 * prefix (if any, also stripping repeated factory prefixes if found).
 	 * @param name the name of the bean

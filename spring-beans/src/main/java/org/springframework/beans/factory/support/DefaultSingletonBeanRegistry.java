@@ -75,18 +75,23 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 
 	/** Cache of singleton objects: bean name to bean instance. */
+	// 一级缓存
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
 	/** Cache of singleton factories: bean name to ObjectFactory. */
+	// 三级缓存
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
 	/** Cache of early singleton objects: bean name to bean instance. */
+	// 二级缓存
 	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);
 
 	/** Set of registered singletons, containing the bean names in registration order. */
+	// 注册的bean name缓存
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
 	/** Names of beans that are currently in creation. */
+	// 当前正在创建的 bean 的名称
 	private final Set<String> singletonsCurrentlyInCreation =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
@@ -99,6 +104,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	private Set<Exception> suppressedExceptions;
 
 	/** Flag that indicates whether we're currently within destroySingletons. */
+	// 当前是否有在销毁单例bean标识
 	private boolean singletonsCurrentlyInDestruction = false;
 
 	/** Disposable bean instances: bean name to disposable instance. */
@@ -108,9 +114,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<>(16);
 
 	/** Map between dependent bean names: bean name to Set of dependent bean names. */
+	// key->dependence bean value->beanName
 	private final Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<>(64);
 
 	/** Map between depending bean names: bean name to Set of bean names for the bean's dependencies. */
+	// key->beanName value->bean依赖bean name集合
 	private final Map<String, Set<String>> dependenciesForBeanMap = new ConcurrentHashMap<>(64);
 
 
@@ -169,6 +177,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * 返回在给定名称下注册的（原始）单例对象。
+	 * 检查已经实例化的单例，并允许早期引用当前创建的单例（解决循环引用）
 	 * Return the (raw) singleton object registered under the given name.
 	 * <p>Checks already instantiated singletons and also allows for an early
 	 * reference to a currently created singleton (resolving a circular reference).
@@ -179,6 +189,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 		// Quick check for existing instance without full singleton lock
+		// 获取bean 缓存对象 一级缓存没有从二级缓存中获取 二级缓存没有从三级缓存获取ObjectFactory
 		Object singletonObject = this.singletonObjects.get(beanName);
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			singletonObject = this.earlySingletonObjects.get(beanName);
@@ -204,6 +215,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * 通过给定名称返回原生单例对象，注册在当前名称下
 	 * Return the (raw) singleton object registered under the given name,
 	 * creating and registering a new one if none registered yet.
 	 * @param beanName the name of the bean
@@ -224,6 +236,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
+				// 当前beanNanme存放在正在创建缓存中
 				beforeSingletonCreation(beanName);
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
@@ -231,6 +244,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					// 调用方法参数匿名内部类
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				}
@@ -345,6 +359,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * inCreationCheckExclusions不包含当前对象执行存放单例对象当前创建缓存
 	 * Callback before singleton creation.
 	 * <p>The default implementation register the singleton as currently in creation.
 	 * @param beanName the name of the singleton about to be created
@@ -405,6 +420,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * 注册bean和依赖bean关系
 	 * Register a dependent bean for the given bean,
 	 * to be destroyed before the given bean is destroyed.
 	 * @param beanName the name of the bean
@@ -429,6 +445,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * 循环依赖检查
+	 * 确定给定bean和bean依赖集合 是否已经注册到依赖bean的依赖
 	 * Determine whether the specified dependent bean has been registered as
 	 * dependent on the given bean or on any of its transitive dependencies.
 	 * @param beanName the name of the bean to check
@@ -440,16 +458,28 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			return isDependent(beanName, dependentBeanName, null);
 		}
 	}
-
+	
+	/**
+	 * 例：A—>B  A依赖B
+	 * 第一步查询出依赖A的集合，如果集合中存在B，之前保存了B->A存在循环依赖
+	 * 第二步遍历依赖A得bean集合，找出依赖者 是否包含B
+	 * @param beanName
+	 * @param dependentBeanName
+	 * @param alreadySeen
+	 * @return
+	 */
 	private boolean isDependent(String beanName, String dependentBeanName, @Nullable Set<String> alreadySeen) {
 		if (alreadySeen != null && alreadySeen.contains(beanName)) {
 			return false;
 		}
 		String canonicalName = canonicalName(beanName);
+		// 查找出依赖当前bean的bean  key为被依赖bean value为bean
+		// dependentBeans依赖canonicalName
 		Set<String> dependentBeans = this.dependentBeanMap.get(canonicalName);
 		if (dependentBeans == null) {
 			return false;
 		}
+		// 存在循环依赖
 		if (dependentBeans.contains(dependentBeanName)) {
 			return true;
 		}
@@ -458,6 +488,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				alreadySeen = new HashSet<>();
 			}
 			alreadySeen.add(beanName);
+			// 被依赖bean检查
 			if (isDependent(transitiveDependency, dependentBeanName, alreadySeen)) {
 				return true;
 			}
@@ -542,6 +573,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * 删除bean 实例缓存
+	 * disposableBeans remove
+	 * destroyBean
 	 * Destroy the given bean. Delegates to {@code destroyBean}
 	 * if a corresponding disposable bean instance is found.
 	 * @param beanName the name of the bean
@@ -560,6 +594,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * 销毁给定的bean 一必须在自身销毁前销魂依赖bean
+	 * dependentBeanMap remove
+	 * 调用DisposableBean destroy
+	 * containedBeanMap remove
+	 * dependenciesForBeanMap remove
 	 * Destroy the given bean. Must destroy beans that depend on the given
 	 * bean before the bean itself. Should not throw any exceptions.
 	 * @param beanName the name of the bean

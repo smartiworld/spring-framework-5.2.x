@@ -78,6 +78,7 @@ class ConditionEvaluator {
 	 * @return if the item should be skipped
 	 */
 	public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable ConfigurationPhase phase) {
+		// 非conditional注解类直接返回
 		if (metadata == null || !metadata.isAnnotated(Conditional.class.getName())) {
 			return false;
 		}
@@ -89,7 +90,7 @@ class ConditionEvaluator {
 			}
 			return shouldSkip(metadata, ConfigurationPhase.REGISTER_BEAN);
 		}
-
+		// 获取Conditional注解value配置condition
 		List<Condition> conditions = new ArrayList<>();
 		for (String[] conditionClasses : getConditionClasses(metadata)) {
 			for (String conditionClass : conditionClasses) {
@@ -99,7 +100,7 @@ class ConditionEvaluator {
 		}
 
 		AnnotationAwareOrderComparator.sort(conditions);
-
+		// condition配置 未匹配返回true
 		for (Condition condition : conditions) {
 			ConfigurationPhase requiredPhase = null;
 			if (condition instanceof ConfigurationCondition) {

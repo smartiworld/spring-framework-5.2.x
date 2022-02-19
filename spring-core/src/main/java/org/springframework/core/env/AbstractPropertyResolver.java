@@ -236,6 +236,7 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 	}
 
 	private String doResolvePlaceholders(String text, PropertyPlaceholderHelper helper) {
+		// 解析文件名称占位符 ${}
 		return helper.replacePlaceholders(text, this::getPropertyAsRawString);
 	}
 

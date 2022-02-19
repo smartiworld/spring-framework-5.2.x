@@ -21,6 +21,7 @@ import org.springframework.context.annotation.AnnotationConfigBeanDefinitionPars
 import org.springframework.context.annotation.ComponentScanBeanDefinitionParser;
 
 /**
+ * spring 自定义标签 负责将自定义标签对应parser解析类注册到NamespaceHandlerSupport 缓存中
  * {@link org.springframework.beans.factory.xml.NamespaceHandler}
  * for the '{@code context}' namespace.
  *

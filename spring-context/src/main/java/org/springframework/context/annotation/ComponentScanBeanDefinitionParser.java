@@ -45,6 +45,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * 解析component-scan标签
  * Parser for the {@code <context:component-scan/>} element.
  *
  * @author Mark Fisher
@@ -87,6 +88,7 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 
 		// Actually scan for bean definitions and register them.
 		ClassPathBeanDefinitionScanner scanner = configureScanner(parserContext, element);
+		// 扫描配置路径下的class 并注册beanDefinition
 		Set<BeanDefinitionHolder> beanDefinitions = scanner.doScan(basePackages);
 		registerComponents(parserContext.getReaderContext(), beanDefinitions, element);
 
@@ -109,6 +111,7 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 		}
 
 		try {
+			// bean name生成策略
 			parseBeanNameGenerator(element, scanner);
 		}
 		catch (Exception ex) {

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<import resource="spring-test-bean.xml"></import>
+	<alias name="testAlias" alias="aa"></alias>
+
+	<bean id="testAlias" name="aa,bb;cc,;dd" class="org.smart.spring.alias.TestAlias">
+		<description></description>
+		<replaced-method>
+			<arg-type></arg-type>
+		</replaced-method>
+		<constructor-arg ref="testA">
+<!--			<bean></bean>-->
+<!--			<ref></ref>-->
+		</constructor-arg>
+		<qualifier type="">
+			<attribute key="" value=""/>
+		</qualifier>
+		
+	</bean>
+	<bean id="testA" class="org.smart.spring.constructor.TestA"></bean>
+</beans>

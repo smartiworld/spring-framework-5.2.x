@@ -25,6 +25,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.lang.Nullable;
 
 /**
+ * 将所有调用委托给父 MessageSource 的空 {@link MessageSource}。 如果没有可用的父级，它根本不会解析任何消息。
  * Empty {@link MessageSource} that delegates all calls to the parent MessageSource.
  * If no parent is available, it simply won't resolve any message.
  *

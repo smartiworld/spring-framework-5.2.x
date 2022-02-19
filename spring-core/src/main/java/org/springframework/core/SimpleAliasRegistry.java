@@ -46,6 +46,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	/** Map from alias to canonical name. */
+	// key->alias value->name
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
 
 
@@ -55,6 +56,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		Assert.hasText(alias, "'alias' must not be empty");
 		synchronized (this.aliasMap) {
 			if (alias.equals(name)) {
+				// 别名和bean name相同 删除bean name映射别名缓存
 				this.aliasMap.remove(alias);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Alias definition '" + alias + "' ignored since it points to same name");
@@ -76,6 +78,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 								registeredName + "' with new target name '" + name + "'");
 					}
 				}
+				// 检查是否存在循环别名
 				checkForAliasCircle(name, alias);
 				this.aliasMap.put(alias, name);
 				if (logger.isTraceEnabled()) {
@@ -202,6 +205,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	}
 
 	/**
+	 * 确定原始名称，将别名解析为规范名称。存在别名 返回别名对应名称
 	 * Determine the raw name, resolving aliases to canonical names.
 	 * @param name the user-specified name
 	 * @return the transformed name

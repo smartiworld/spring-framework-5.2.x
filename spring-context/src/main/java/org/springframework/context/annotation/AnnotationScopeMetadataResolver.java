@@ -72,8 +72,12 @@ public class AnnotationScopeMetadataResolver implements ScopeMetadataResolver {
 		Assert.notNull(scopeAnnotationType, "'scopeAnnotationType' must not be null");
 		this.scopeAnnotationType = scopeAnnotationType;
 	}
-
-
+	
+	/**
+	 * 解析Scope注解
+	 * @param definition the target bean definition
+	 * @return
+	 */
 	@Override
 	public ScopeMetadata resolveScopeMetadata(BeanDefinition definition) {
 		ScopeMetadata metadata = new ScopeMetadata();

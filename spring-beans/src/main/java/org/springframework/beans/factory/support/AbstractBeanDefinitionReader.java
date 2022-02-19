@@ -90,11 +90,13 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			this.resourceLoader = (ResourceLoader) this.registry;
 		}
 		else {
+			// 包装DefaultResourceLoader
 			this.resourceLoader = new PathMatchingResourcePatternResolver();
 		}
 
 		// Inherit Environment if possible
 		if (this.registry instanceof EnvironmentCapable) {
+			// 环境属性
 			this.environment = ((EnvironmentCapable) this.registry).getEnvironment();
 		}
 		else {

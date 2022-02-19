@@ -26,6 +26,8 @@ package org.springframework.core;
 public interface AliasRegistry {
 
 	/**
+	 * 注册bean name alias map
+	 * key->alias  value->beanName
 	 * Given a name, register an alias for it.
 	 * @param name the canonical name
 	 * @param alias the alias to be registered

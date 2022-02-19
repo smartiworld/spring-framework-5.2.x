@@ -33,6 +33,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
+ * 创建自定义标签流程
+ * 创建自定义NamespaceHandlerResolver 实现NamespaceHandlerResolver
  * Default implementation of the {@link NamespaceHandlerResolver} interface.
  * Resolves namespace URIs to implementation classes based on the mappings
  * contained in mapping file.
@@ -107,6 +109,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 
 
 	/**
+	 * 通过namespaceUri 解析对应NamespaceHandler  通过在spring.factory配置映射关系
 	 * Locate the {@link NamespaceHandler} for the supplied namespace URI
 	 * from the configured mappings.
 	 * @param namespaceUri the relevant namespace URI
@@ -148,6 +151,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	}
 
 	/**
+	 * 1.加载namespaceHandler和namespaceUri映射关系 在spring.factory配置文件中
 	 * Load the specified NamespaceHandler mappings lazily.
 	 */
 	private Map<String, Object> getHandlerMappings() {

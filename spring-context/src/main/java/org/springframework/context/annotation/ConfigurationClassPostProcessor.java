@@ -264,6 +264,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * {@link Configuration} classes.
 	 */
 	public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
+		// 存放configuration注解修饰class的beanDefinition
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
 		String[] candidateNames = registry.getBeanDefinitionNames();
 
@@ -274,6 +275,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
 			}
+			// configuration注解
+			// 如果Configuration配置proxyBeanMethods代理为true则为full
+			// 如果加了@Bean、@Component、@ComponentScan、@Import、@ImportResource注解，则设置为lite
+			// 如果配置类上被@Order注解标注，则设置BeanDefinition的order属性值
 			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
 			}

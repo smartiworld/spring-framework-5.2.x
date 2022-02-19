@@ -124,6 +124,7 @@ public abstract class BeanDefinitionReaderUtils {
 		}
 
 		// Top-level bean: use plain class name with unique suffix if necessary.
+		// 检查beanFactory中是否存在当前名称 如果存在增加后缀数字
 		return uniqueBeanName(generatedBeanName, registry);
 	}
 
@@ -150,6 +151,8 @@ public abstract class BeanDefinitionReaderUtils {
 	}
 
 	/**
+	 * bean factory 注册bean definition（解析 bean配置）
+	 *
 	 * Register the given bean definition with the given bean factory.
 	 * @param definitionHolder the bean definition including name and aliases
 	 * @param registry the bean factory to register with
@@ -164,9 +167,11 @@ public abstract class BeanDefinitionReaderUtils {
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 
 		// Register aliases for bean name, if any.
+		// 注册当前beanDefinition alias 别名
 		String[] aliases = definitionHolder.getAliases();
 		if (aliases != null) {
 			for (String alias : aliases) {
+				// 注册bean 别名 key->alias value->beanName
 				registry.registerAlias(beanName, alias);
 			}
 		}

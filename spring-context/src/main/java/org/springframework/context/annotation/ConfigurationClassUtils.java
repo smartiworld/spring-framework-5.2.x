@@ -75,6 +75,11 @@ abstract class ConfigurationClassUtils {
 
 
 	/**
+	 * 检查class 上有无configuration注解
+	 * 断在嵌套的关系中是否包含配置类或者组件类或者自动注册进去的，并做相应的标记
+	 * 如果Configuration配置proxyBeanMethods代理为true则为full
+	 * 如果加了@Bean、@Component、@ComponentScan、@Import、@ImportResource注解，则设置为lite
+	 * 如果配置类上被@Order注解标注，则设置BeanDefinition的order属性值
 	 * Check whether the given bean definition is a candidate for a configuration class
 	 * (or a nested component class declared within a configuration/component class,
 	 * to be auto-registered as well), and mark it accordingly.
@@ -91,6 +96,9 @@ abstract class ConfigurationClassUtils {
 		}
 
 		AnnotationMetadata metadata;
+		// 通过注解注入的b都是AnnotatedGenericBeanDefinition，实现了AnnotatedBeanDefinition
+		// spring内部的bd是RootBeanDefinition，实现了AbstractBeanDefinition
+		// 此处主要用于判断是否归属于AnnotatedBeanDefinition
 		if (beanDef instanceof AnnotatedBeanDefinition &&
 				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {
 			// Can reuse the pre-parsed metadata from the given BeanDefinition...
@@ -99,6 +107,7 @@ abstract class ConfigurationClassUtils {
 		else if (beanDef instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) beanDef).hasBeanClass()) {
 			// Check already loaded Class if present...
 			// since we possibly can't even load the class file for this Class.
+			// 如果class实例是下面四种类或接口的子类、父接口等任何一种情况，直接返回
 			Class<?> beanClass = ((AbstractBeanDefinition) beanDef).getBeanClass();
 			if (BeanFactoryPostProcessor.class.isAssignableFrom(beanClass) ||
 					BeanPostProcessor.class.isAssignableFrom(beanClass) ||
@@ -110,7 +119,9 @@ abstract class ConfigurationClassUtils {
 		}
 		else {
 			try {
+				// 获取className的MetadataReader实例
 				MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(className);
+				// 读取底层类的完整注释元数据，包括带注解方法的元数据
 				metadata = metadataReader.getAnnotationMetadata();
 			}
 			catch (IOException ex) {
@@ -121,11 +132,14 @@ abstract class ConfigurationClassUtils {
 				return false;
 			}
 		}
-
+		// 获取bean定义的元数据被@Configuration注解标注的属性字典值
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
+		// @Configuration proxyBeanMethods设置了true 设置属性值full
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
+		// 当前class 没有被Configuration注解修饰 || 是否是@Component @ComponentScan @Import @ImportResource @Bean
+		// 满足上面条件设置lite
 		else if (config != null || isConfigurationCandidate(metadata)) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}
@@ -143,6 +157,7 @@ abstract class ConfigurationClassUtils {
 	}
 
 	/**
+	 * 检查当前原数据 是否是@Component @ComponentScan @Import @ImportResource @Bean
 	 * Check the given metadata for a configuration class candidate
 	 * (or nested component class declared within a configuration/component class).
 	 * @param metadata the metadata of the annotated class

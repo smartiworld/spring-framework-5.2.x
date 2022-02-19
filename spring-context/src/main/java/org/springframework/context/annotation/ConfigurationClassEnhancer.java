@@ -130,6 +130,7 @@ class ConfigurationClassEnhancer {
 	}
 
 	/**
+	 * 使用enhancer生成父类的子类 并且确保为子类注册回调
 	 * Uses enhancer to generate a subclass of superclass,
 	 * ensuring that callbacks are registered for the new subclass.
 	 */

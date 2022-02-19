@@ -20,6 +20,7 @@ import org.springframework.core.SpringProperties;
 import org.springframework.lang.Nullable;
 
 /**
+ * spring.expression.compiler.mode 配置SpEL表达式
  * Configuration object for the SpEL expression parser.
  *
  * @author Juergen Hoeller
