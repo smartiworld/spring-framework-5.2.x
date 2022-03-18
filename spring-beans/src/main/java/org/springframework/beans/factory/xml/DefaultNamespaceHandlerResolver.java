@@ -109,7 +109,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 
 
 	/**
-	 * 通过namespaceUri 解析对应NamespaceHandler  通过在spring.factory配置映射关系
+	 * 通过namespaceUri 解析对应NamespaceHandler  通过在spring.handlers配置映射关系
 	 * Locate the {@link NamespaceHandler} for the supplied namespace URI
 	 * from the configured mappings.
 	 * @param namespaceUri the relevant namespace URI
@@ -151,7 +151,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	}
 
 	/**
-	 * 1.加载namespaceHandler和namespaceUri映射关系 在spring.factory配置文件中
+	 * 1.加载namespaceHandler和namespaceUri映射关系 在spring.handlers配置文件中
 	 * Load the specified NamespaceHandler mappings lazily.
 	 */
 	private Map<String, Object> getHandlerMappings() {

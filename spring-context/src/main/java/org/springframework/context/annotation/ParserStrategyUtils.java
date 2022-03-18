@@ -63,6 +63,7 @@ abstract class ParserStrategyUtils {
 		ClassLoader classLoader = (registry instanceof ConfigurableBeanFactory ?
 				((ConfigurableBeanFactory) registry).getBeanClassLoader() : resourceLoader.getClassLoader());
 		T instance = (T) createInstance(clazz, environment, resourceLoader, registry, classLoader);
+		// clazz 实现Aware接口  BeanClassLoaderAware BeanFactoryAware EnvironmentAware ResourceLoaderAware
 		ParserStrategyUtils.invokeAwareMethods(instance, environment, resourceLoader, registry, classLoader);
 		return instance;
 	}
@@ -92,6 +93,7 @@ abstract class ParserStrategyUtils {
 
 			Object[] parameters = new Object[parameterTypes.length];
 			for (int i = 0; i < parameterTypes.length; i++) {
+				// 构造函数参数类型 Environment ResourceLoader BeanFactory ClassLoader
 				parameters[i] = resolveParameter(parameterTypes[i], environment,
 						resourceLoader, registry, classLoader);
 			}

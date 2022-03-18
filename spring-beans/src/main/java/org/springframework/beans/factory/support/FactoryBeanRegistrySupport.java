@@ -44,7 +44,7 @@ import org.springframework.lang.Nullable;
 public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanRegistry {
 
 	/** Cache of singleton objects created by FactoryBeans: FactoryBean name to object. */
-	// FactoryBean创建单例对象缓存  key->FactoryBean name value-> create bean
+	// FactoryBean创建单例对象缓存  key->FactoryBean name, value-> create bean
 	private final Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>(16);
 
 
